@@ -18,8 +18,11 @@ class Neuron
     void feedForward(const Layer &prevLayer);
     void calcOutputGradients(double targetVal);
     void calcHiddenGradients(const Layer &nextLayer);
+    void updateInputWeights(Layer &prevLayer);
 
   private:
+    static double alpha;
+    static double eta;
     static double transferFunction(double x);
     static double transferFanctionDerivative(double x);
     static double randomWeight(void) { return rand() / double(RAND_MAX); }
@@ -29,6 +32,21 @@ class Neuron
     unsigned m_myIndex;
     double m_gradient;
 };
+
+double Neuron::eta = 0.15;
+double Neuron::alpha = 0.5;
+
+void Neuron::updateInputWeights(Layer &prevLayer)
+{
+    for (unsigned n = 0; n < prevLayer.size(); ++n)
+    {
+        Neuron &neuron = prevLayer[n];
+        double oldDeltaWeight = neuron.m_outputWeights[m_myIndex].deltaWeight;
+        double newDeltaWeight = eta * neuron.getOutputVal() * m_gradient + alpha * oldDeltaWeight;
+        neuron.m_outputWeights[m_myIndex].deltaWeight = newDeltaWeight;
+        neuron.m_outputWeights[m_myIndex].weight += newDeltaWeight;
+    }
+}
 
 double Neuron::sumDOW(const Layer &nextLayer) const
 {
@@ -59,7 +77,7 @@ double Neuron::transferFunction(double x)
     return tanh(x);
 }
 
-double transferFanctionDerivative(double x)
+double Neuron::transferFanctionDerivative(double x)
 {
     return 1.0 - x * x;
 }
@@ -67,7 +85,8 @@ double transferFanctionDerivative(double x)
 void Neuron::feedForward(const Layer &prevLayer)
 {
     double sum = 0.0;
-    for(unsigned n = 0; n < prevLayer.size(); n++) {
+    for (unsigned n = 0; n < prevLayer.size(); n++)
+    {
         sum += prevLayer[n].getOutputVal() * prevLayer[n].m_outputWeights[m_myIndex].weight;
     }
 

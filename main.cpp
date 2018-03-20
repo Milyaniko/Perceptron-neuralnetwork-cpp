@@ -4,7 +4,8 @@
 
 using namespace std;
 
-int main() {
+int main()
+{
     vector<unsigned> topology;
     topology.push_back(3);
     topology.push_back(2);
@@ -19,5 +20,4 @@ int main() {
 
     vector<double> resultVals;
     myNet.getResults(resultVals);
-    
-}
+};

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct Connection 
+struct Connection
 {
     double weight;
     double deltaWeight;

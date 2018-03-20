@@ -18,6 +18,15 @@ class Net
     double m_error;
 };
 
+void Net::getResults(vector<double> &resultVals) const
+{
+    resultVals.clear();
+    for (unsigned n = 0; n < m_layers.back().size() - 1; ++n)
+    {
+        resultVals.push_back(m_layers.back()[n].getOutputVal());
+    }
+}
+
 void Net::backProp(const vector<double> &targetVals)
 {
     Layer &outputLayer = m_layers.back();
@@ -32,7 +41,8 @@ void Net::backProp(const vector<double> &targetVals)
     m_error = sqrt(m_error);
 
     // Calculate output layer gradients
-    for(unsigned n = 0; n < outputLayer.size() - 1; ++n) {
+    for (unsigned n = 0; n < outputLayer.size() - 1; ++n)
+    {
         outputLayer[n].calcOutputGradients(targetVals[n]);
     }
 
@@ -50,11 +60,13 @@ void Net::backProp(const vector<double> &targetVals)
     // For all layers from outputs to first hidden layer
     // Update connection weights
 
-    for(unsigned layerNum = m_layers.size() - 1; layerNum > 0; --layerNum) {
+    for (unsigned layerNum = m_layers.size() - 1; layerNum > 0; --layerNum)
+    {
         Layer &layer = m_layers[layerNum];
         Layer &prevLayer = m_layers[layerNum - 1];
 
-        for(unsigned n = 0; n < layer.size() - 1; ++n) {
+        for (unsigned n = 0; n < layer.size() - 1; ++n)
+        {
             layer[n].updateInputWeights(prevLayer);
         }
     }
@@ -64,13 +76,16 @@ void Net::feedForward(const vector<double> &inputVals)
 {
     assert(inputVals.size() == m_layers[0].size() - 1);
 
-    for(unsigned i = 0; i < inputVals.size(); ++i) {
+    for (unsigned i = 0; i < inputVals.size(); ++i)
+    {
         m_layers[0][i].setOutputVal(inputVals[i]);
     }
 
-    for(unsigned layerNum = 1;  layerNum < m_layers.size(); ++layerNum) {
+    for (unsigned layerNum = 1; layerNum < m_layers.size(); ++layerNum)
+    {
         Layer &prevLayer = m_layers[layerNum - 1];
-        for(unsigned n = 0; n < m_layers[layerNum].size(); ++n) {
+        for (unsigned n = 0; n < m_layers[layerNum].size(); ++n)
+        {
             m_layers[layerNum][n].feedForward(prevLayer);
         }
     }
@@ -88,5 +103,6 @@ Net::Net(const vector<unsigned> &topology)
             m_layers.back().push_back(Neuron(numOutputs, neuronNum));
             cout << "Made a Neuron!" << endl;
         }
+        m_layers.back().back().setOutputVal(1.0);
     }
 }
